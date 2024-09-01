@@ -1,0 +1,15 @@
+export type RrulePropertiesKeysType =
+  | 'FREQ'
+  | 'UNTIL'
+  | 'COUNT'
+  | 'INTERVAL'
+  | 'BYDAY'
+  | 'BYMONTHDAY'
+  | 'BYYEARDAY'
+  | 'BYWEEKNO'
+  | 'BYMONTH'
+  | 'BYSETPOS'
+  | 'BYHOUR'
+  | 'BYMINUTE'
+  | 'BYSECOND'
+  | 'WKST';
