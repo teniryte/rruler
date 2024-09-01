@@ -15,6 +15,7 @@
     "experimentalDecorators": true,
 
     "incremental": true,
+    "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "allowSyntheticDefaultImports": true,
@@ -22,7 +23,6 @@
     "importHelpers": true,
     "downlevelIteration": true,
 
-    "noImplicitAny": true,
     "strictNullChecks": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false

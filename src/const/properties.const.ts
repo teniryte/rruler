@@ -10,12 +10,16 @@ export const RRULE_PROPERTIES: {
   [K in keyof RruleInterface]: {
     key: RrulePropertiesKeysType;
     parse: (val: string) => RruleInterface[K];
+    compile: (val: RruleInterface[K]) => string;
   };
 } = {
   frequency: {
     key: 'FREQ',
     parse(val: string) {
       return val as RruleFrequencyEnum;
+    },
+    compile(val) {
+      return val as string;
     },
   },
   until: {
@@ -24,11 +28,17 @@ export const RRULE_PROPERTIES: {
       const date = moment(val, 'YYYYMMDDTHHmmssZ');
       return date;
     },
+    compile(val) {
+      return val.utc().format('YYYYMMDDTHHmmss') + 'Z';
+    },
   },
   count: {
     key: 'COUNT',
     parse(val: string) {
       return +val;
+    },
+    compile(val) {
+      return val + '';
     },
   },
   interval: {
@@ -36,11 +46,17 @@ export const RRULE_PROPERTIES: {
     parse(val: string) {
       return +val;
     },
+    compile(val) {
+      return val + '';
+    },
   },
   byDay: {
     key: 'BYDAY',
     parse(val: string) {
       return val.split(',').map((val) => parseWeekday(val));
+    },
+    compile(val) {
+      return val.map((item) => `${item.index || ''}${item.name}`).join(',');
     },
   },
   byMonthDay: {
@@ -48,11 +64,17 @@ export const RRULE_PROPERTIES: {
     parse(val: string) {
       return val.split(',').map((val) => +val);
     },
+    compile(val) {
+      return val.join(',');
+    },
   },
   byYearDay: {
     key: 'BYYEARDAY',
     parse(val: string) {
       return val.split(',').map((val) => +val);
+    },
+    compile(val) {
+      return val.join(',');
     },
   },
   byWeekNo: {
@@ -60,11 +82,17 @@ export const RRULE_PROPERTIES: {
     parse(val: string) {
       return val.split(',').map((val) => +val);
     },
+    compile(val) {
+      return val.join(',');
+    },
   },
   byMonth: {
     key: 'BYMONTH',
     parse(val: string) {
       return val.split(',').map((val) => +val);
+    },
+    compile(val) {
+      return val.join(',');
     },
   },
   bySetPos: {
@@ -72,11 +100,17 @@ export const RRULE_PROPERTIES: {
     parse(val: string) {
       return val.split(',').map((val) => +val);
     },
+    compile(val) {
+      return val.join(',');
+    },
   },
   byHour: {
     key: 'BYHOUR',
     parse(val: string) {
       return val.split(',').map((val) => +val);
+    },
+    compile(val) {
+      return val.join(',');
     },
   },
   byMinute: {
@@ -84,17 +118,26 @@ export const RRULE_PROPERTIES: {
     parse(val: string) {
       return val.split(',').map((val) => +val);
     },
+    compile(val) {
+      return val.join(',');
+    },
   },
   bySecond: {
     key: 'BYSECOND',
     parse(val: string) {
       return val.split(',').map((val) => +val);
     },
+    compile(val) {
+      return val.join(',');
+    },
   },
   weekStart: {
     key: 'WKST',
     parse(val: string) {
       return val as RruleWeekdayEnum;
+    },
+    compile(val) {
+      return val;
     },
   },
 };

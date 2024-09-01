@@ -24,3 +24,12 @@ import { formatRrule } from 'rruler';
 
 const rruleLabel = formatRrule(rruleObject || rruleString, 'ru');
 ```
+
+```ts
+import { compileRrule } from 'rruler';
+
+const rruleString = compileRrule({
+  frequency: 'MONTH',
+  byMonthDay: [1, 15],
+});
+```

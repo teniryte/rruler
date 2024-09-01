@@ -8,7 +8,7 @@ import { RrulePropertiesKeysType } from '../types/properties-names.type';
 import { RruleWeekdayEnum } from '../types/weekday.enum';
 import { RruleWeekdayInterface } from '../types/weekday.interface';
 
-export const parseRrule = async (rruleString: string) => {
+export const parseRrule = (rruleString: string) => {
   const str = rruleString?.replace('RRULE:', '');
   if (!str) return null;
   const rrule = parseRruleProperties(str);
@@ -46,6 +46,7 @@ export const getPropertyByKey = (key: RrulePropertiesKeysType) => {
   ) as unknown as (keyof RruleInterface)[];
   for (const name of names) {
     const item = RRULE_PROPERTIES[name];
+    if (!item) continue;
     if (item.key === key) {
       return { ...item, name };
     }
@@ -53,7 +54,7 @@ export const getPropertyByKey = (key: RrulePropertiesKeysType) => {
   return null;
 };
 
-export const parseWeekday = (value: string): RruleWeekdayInterface => {
+export const parseWeekday = (value: string): RruleWeekdayInterface | null => {
   const name = value.slice(-2) as RruleWeekdayEnum;
   if (!RRULE_WEEKDAYS.includes(name)) return null;
   const result: RruleWeekdayInterface = {
