@@ -36,12 +36,7 @@ export const createRrule = (data: RruleGenerateInterface) => {
         typeof wd === 'string'
           ? { name: wd.toUpperCase() as RruleWeekdayEnum }
           : { name: wd[1].toUpperCase() as RruleWeekdayEnum, index: wd[0] }
-    ) ||
-    (start
-      ? (RRULE_WEEKDAYS[
-          start.weekday() - 1
-        ] as unknown as RruleWeekdayInterface[])
-      : null);
+    );
   if (times) {
     rrule.byHour = [];
     rrule.byMinute = [];
@@ -50,42 +45,23 @@ export const createRrule = (data: RruleGenerateInterface) => {
       rrule.byMinute.push(time[1]);
     });
   }
-  if (data.each === 'day') {
-    if (hours || start) {
-      rrule.byHour = hours || [start.hours()];
-    }
-    if (minutes || start) {
-      rrule.byMinute = minutes || [start.minutes()];
-    }
-  }
-  if (hours && !rrule.byHour) {
+  if (hours) {
     rrule.byHour = hours;
   }
-  if (minutes && !rrule.byMinute) {
+  if (minutes) {
     rrule.byMinute = minutes;
   }
-  if (data.each === 'month') {
-    if (days || start) {
-      rrule.byMonthDay = days || [start.date()];
-    }
-    if (weeks) {
-      rrule.byWeekNo = weeks;
-    }
-    if (months) {
-      rrule.byMonth = months;
-    }
-  }
-  if (wds) {
+  if (weekdays) {
     rrule.byDay = weekdays;
   }
-  if (data.each === 'year') {
-    if (months || start) {
-      rrule.byMonth =
-        months || (!data.weekdays && !data.weeks && [start.month() + 1]);
-    }
-    if (data.days || start) {
-      rrule.byMonthDay = days || [start.date()];
-    }
+  if (days) {
+    rrule.byMonthDay = days;
+  }
+  if (weeks) {
+    rrule.byWeekNo = weeks;
+  }
+  if (months) {
+    rrule.byMonth = months;
   }
   if (data.count) {
     rrule.count = data.count;
@@ -102,12 +78,34 @@ export const createRrule = (data: RruleGenerateInterface) => {
   if (data.weekStart) {
     rrule.weekStart = data.weekStart.toUpperCase() as RruleWeekdayEnum;
   }
-  if (data.week) {
-    rrule.byWeekNo = [data.week];
-  }
   if (data.weeks) {
-    rrule.byWeekNo = data.weeks;
+    rrule.byWeekNo = weeks;
   }
+  if (data.each === 'day') {
+    if (!rrule.byHour && start) {
+      rrule.byHour = [start.hours()];
+      rrule.byMinute = [start.minutes()];
+    }
+  }
+  if (data.each === 'week') {
+    if (!rrule.byDay && start) {
+      rrule.byDay = [{ name: RRULE_WEEKDAYS[start.weekday()] }];
+    }
+  }
+  if (data.each === 'month') {
+    if (!rrule.byMonthDay && start) {
+      rrule.byMonthDay = [start.date()]
+    }
+  }
+  if (data.each === 'year') {
+    if (!rrule.byMonth && start) {
+      rrule.byMonth = [start.month() + 1];
+    }
+    if (!rrule.byMonthDay && start) {
+      rrule.byMonthDay = [start.date()];
+    }
+  }
+
   return rrule;
 };
 

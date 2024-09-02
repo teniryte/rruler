@@ -33,6 +33,22 @@ const MONTH_TITLES = [
   'Декабрь',
 ];
 
+const MONTH_LABELS = [
+  ,
+  'января',
+  'февраля',
+  'марта',
+  'апреля',
+  'мая',
+  'июня',
+  'июля',
+  'августа',
+  'сентября',
+  'октября',
+  'ноября',
+  'декабря',
+];
+
 const parseRruleIfNeeded = (
   rrule: RruleGenerateInterface | RruleInterface | string
 ): RruleInterface => {
@@ -53,12 +69,16 @@ const formatFrequency = (
   let text = '';
   let weekdays = (
     rrule.byDay
-      ? (!rrule.byDay.find((day) => day.index) ? ' по ' : ', ') +
+      ? (!rrule.byDay?.find((day) => day.index) ? ' по ' : ', ') +
         formatRruleWeekdays(rrule.byDay, addDot)
       : ''
   ).trim();
   const week = formatWeeks(rrule.byWeekNo);
   let label;
+  let monthlyDate = null;
+  if (rrule.byMonth?.length === 1 && rrule.byMonthDay?.length === 1) {
+    monthlyDate = formatMonthlyDate(rrule.byMonth[0], rrule.byMonthDay[0]);
+  }
 
   switch (rrule.frequency) {
     case RruleFrequencyEnum.Dayly:
@@ -115,7 +135,9 @@ const formatFrequency = (
       const day = rrule.byMonthDay
         ? `, ${formatRruleMonthDays(rrule.byMonthDay)} числа`
         : '';
-      text = `${label}${month}${weekdays && ', '}${weekdays}${day}`;
+      text = monthlyDate
+        ? `${label} ${monthlyDate}`
+        : `${label}${month}${weekdays && ', '}${weekdays}${day}`;
       break;
     default:
       text = ''; // Default case if needed
@@ -276,49 +298,6 @@ export const rruleJoinItems = (vals: any[]): string => {
   return result;
 };
 
-/*
-export const formatRrule = (str: string, start: string | Date) => {
-  const date = moment(start);
-  const WEEKDAYS = [, 'MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
-
-
-  if (!str) return null;
-
-  if (str.includes('FREQ=MONTHLY')) {
-
-  }
-  if (str.includes('FREQ=WEEKLY')) {
-    let label = 'Каждую неделю';
-    if (str.includes('INTERVAL=')) {
-      const interval = +str.split('INTERVAL=')[1].split(';')[0];
-      label = `Каждые ${interval} ${plural(interval, [
-        'неделя',
-        'недели',
-        'недель',
-      ])}`;
-    }
-    const byday = str.split('BYDAY=')[1]?.split(';')[0] || null;
-    if (!byday) {
-      return `${label} по ${WEEKDAY_TITLES[date.weekday()]}`;
-    }
-    if (byday.split(',').length === 5) return `${label} по будням`;
-    if (!byday) return label;
-    const weekdays = byday
-      .split(',')
-      .map((d) => WEEKDAYS.indexOf(d))
-      .sort()
-      .map((index) => WEEKDAY_TITLES[index]);
-    return `${label} по ${weekdays.join(',')}`;
-  }
-  if (str.includes('FREQ=YEARLY')) {
-    let label = 'Каждый год';
-    if (str.includes('INTERVAL=')) {
-      const interval = +str.split('INTERVAL=')[1].split(';')[0];
-      label = `Каждые ${interval} ${plural(interval, ['год', 'года', 'лет'])}`;
-    }
-    return label;
-  }
-  return null;
+const formatMonthlyDate = (month: number, date: number) => {
+  return `${date} ${MONTH_LABELS[month]}`;
 };
-
-*/
