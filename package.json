@@ -1,6 +1,6 @@
 {
   "name": "rruler",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Parse & Format rrule in Russian language",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -12,7 +12,7 @@
     "test": "nodemon -e .ts --watch src --watch tests --exec 'jest'",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:esm": "tsc --project tsconfig.esm.json",
-    "build": "npm run build:cjs && npm run build:esm",
+    "build": "npm run build:esm",
     "dev": "nodemon -e .ts --watch src --exec 'yarn build; node dist/cjs/index.js'",
     "clean": "rimraf dist",
     "lint": "eslint 'src/**/*.ts'",
