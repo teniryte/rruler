@@ -7,9 +7,15 @@ TypeScript library for simple creating, parsing and formatting event RRULE strin
 ```ts
 import { generateRrule } from 'rruler';
 
-const rruleString = generateRrule({
-  date: Date.now(),
+let rruleString = generateRrule({
+  start: moment(),
   each: 'day',
+});
+
+rruleString = generateRrule({
+  start: moment(),
+  end: moment('15.04.2026', 'DD.MM.YYYY'),
+  each: 'year',
 });
 ```
 
