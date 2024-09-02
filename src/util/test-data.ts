@@ -6,7 +6,8 @@ import {
   RruleWeekday,
 } from '../types/generate.interface';
 
-const DATE = moment('02.09.2024 02:53', 'DD.MM.YYYY HH:mm');
+export const DATE = moment('02.09.2024 02:53:00', 'DD.MM.YYYY HH:mm:ss');
+
 export const SIMPLE_TEST: {
   data: RruleGenerateInterface;
   result: string;
@@ -16,10 +17,10 @@ export const SIMPLE_TEST: {
     data: {
       each: RruleEach.Day,
       hours: [9, 18],
-      weekdays: ['mo', 'tu', 'we', 'th', 'fr'] as any,
+      weekdays: ['mo', 'tu', 'we', 'th', 'fr'],
     },
     result: 'RRULE:FREQ=DAILY;BYHOUR=9,18;BYDAY=MO,TU,WE,TH,FR',
-    formatted: 'По пн., вт., ср., чт., пт. в 09:00, 18:00',
+    formatted: 'По будням в 09:00 и 18:00',
   },
   {
     data: {
@@ -27,7 +28,7 @@ export const SIMPLE_TEST: {
       interval: 1,
     },
     result: 'RRULE:FREQ=DAILY;INTERVAL=1',
-    formatted: 'Каждый день',
+    formatted: 'Ежедневно',
   },
   {
     data: {
@@ -35,7 +36,7 @@ export const SIMPLE_TEST: {
       start: DATE,
     },
     result: 'RRULE:FREQ=DAILY;BYHOUR=2;BYMINUTE=53',
-    formatted: 'Каждый день в 02:53',
+    formatted: 'Ежедневно в 02:53',
   },
   {
     data: {
@@ -44,7 +45,7 @@ export const SIMPLE_TEST: {
       minute: 30,
     },
     result: 'RRULE:FREQ=DAILY;BYHOUR=12;BYMINUTE=30',
-    formatted: 'Каждый день в 12:30',
+    formatted: 'Ежедневно в 12:30',
   },
   {
     data: {
@@ -52,7 +53,7 @@ export const SIMPLE_TEST: {
       start: DATE,
     },
     result: 'RRULE:FREQ=MONTHLY;BYMONTHDAY=2',
-    formatted: 'Каждый месяц, 2 числа',
+    formatted: 'Ежемесячно, 2 числа',
   },
   {
     data: {
@@ -60,7 +61,7 @@ export const SIMPLE_TEST: {
       day: 15,
     },
     result: 'RRULE:FREQ=MONTHLY;BYMONTHDAY=15',
-    formatted: 'Каждый месяц, 15 числа',
+    formatted: 'Ежемесячно, 15 числа',
   },
   {
     data: {
@@ -68,7 +69,7 @@ export const SIMPLE_TEST: {
       weekday: [2, RruleWeekday.Monday],
     },
     result: 'RRULE:FREQ=MONTHLY;BYDAY=2MO',
-    formatted: 'Каждый месяц, 2 пн.',
+    formatted: 'Ежемесячно, 2 пн',
   },
   {
     data: {
@@ -76,7 +77,7 @@ export const SIMPLE_TEST: {
       days: [1, 15],
     },
     result: 'RRULE:FREQ=MONTHLY;BYMONTHDAY=1,15',
-    formatted: 'Каждый месяц, 1 и 15 числа',
+    formatted: 'Ежемесячно, 1 и 15 числа',
   },
   {
     data: {
@@ -85,7 +86,7 @@ export const SIMPLE_TEST: {
       positions: [1, -1],
     },
     result: 'RRULE:FREQ=MONTHLY;BYDAY=MO,FR;BYSETPOS=1,-1',
-    formatted: 'Каждый месяц, пн. и пт.',
+    formatted: 'Ежемесячно, по пн и пт',
   },
   {
     data: {
@@ -94,7 +95,7 @@ export const SIMPLE_TEST: {
       count: 5,
     },
     result: 'RRULE:FREQ=MONTHLY;BYDAY=TU;COUNT=5',
-    formatted: 'Каждый месяц по вт.',
+    formatted: 'Ежемесячно, по вт',
   },
   {
     data: {
@@ -102,7 +103,7 @@ export const SIMPLE_TEST: {
       weekday: [3, RruleWeekday.Tuesday],
     },
     result: 'RRULE:FREQ=MONTHLY;BYDAY=3TU',
-    formatted: 'Каждый месяц, 3 вт.',
+    formatted: 'Ежемесячно, 3 вт',
   },
   {
     data: {
@@ -113,7 +114,7 @@ export const SIMPLE_TEST: {
       ],
     },
     result: 'RRULE:FREQ=MONTHLY;BYDAY=1FR,-1FR',
-    formatted: 'Каждый месяц, 1 пт. и посл. пт.',
+    formatted: 'Ежемесячно, 1 и посл. пт',
   },
   {
     data: {
@@ -122,7 +123,7 @@ export const SIMPLE_TEST: {
       weekday: [-1, RruleWeekday.Monday],
     },
     result: 'RRULE:FREQ=MONTHLY;BYDAY=-1MO;INTERVAL=2',
-    formatted: 'Каждые 2 месяца, посл. пн.',
+    formatted: 'Каждые 2 месяца, посл. пн',
   },
   {
     data: {
@@ -130,7 +131,7 @@ export const SIMPLE_TEST: {
       start: DATE,
     },
     result: 'RRULE:FREQ=WEEKLY',
-    formatted: 'Каждую неделю',
+    formatted: 'Еженедельно',
   },
   {
     data: {
@@ -138,7 +139,7 @@ export const SIMPLE_TEST: {
       weekday: RruleWeekday.Sunday,
     },
     result: 'RRULE:FREQ=WEEKLY;BYDAY=SU',
-    formatted: 'Каждую неделю по вс.',
+    formatted: 'Еженедельно по вс',
   },
   {
     data: {
@@ -146,7 +147,7 @@ export const SIMPLE_TEST: {
       weekdays: [RruleWeekday.Friday, RruleWeekday.Saturday],
     },
     result: 'RRULE:FREQ=WEEKLY;BYDAY=FR,SA',
-    formatted: 'Каждую неделю по пт. и сб.',
+    formatted: 'Еженедельно по пт и сб',
   },
 
   {
@@ -155,7 +156,7 @@ export const SIMPLE_TEST: {
       start: DATE,
     },
     result: 'RRULE:FREQ=YEARLY;BYMONTH=9;BYMONTHDAY=2',
-    formatted: 'Каждый год, сентябрь, 2 числа',
+    formatted: 'Ежегодно, сентябрь, 2 числа',
   },
 
   {
@@ -165,7 +166,7 @@ export const SIMPLE_TEST: {
       weekday: [3, RruleWeekday.Wednesday],
     },
     result: 'RRULE:FREQ=YEARLY;BYDAY=3WE;BYMONTH=2,11',
-    formatted: 'Каждый год, февраль и ноябрь, 3 ср.',
+    formatted: 'Ежегодно, февраль и ноябрь, 3 ср',
   },
 
   {
@@ -175,16 +176,16 @@ export const SIMPLE_TEST: {
       days: [15, 20],
     },
     result: 'RRULE:FREQ=YEARLY;BYMONTH=3;BYMONTHDAY=15,20',
-    formatted: 'Каждый год, март, 15 и 20 числа',
+    formatted: 'Ежегодно, март, 15 и 20 числа',
   },
   {
     data: {
       each: RruleEach.Year,
       month: 12,
-      weekdays: ['mo', 'tu', 'we', 'th', 'fr'] as any,
+      weekdays: ['mo', 'tu', 'we', 'th', 'fr'],
     },
     result: 'RRULE:FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR;BYMONTH=12',
-    formatted: 'Каждый год, декабрь, пн., вт., ср., чт., пт.',
+    formatted: 'Ежегодно, декабрь, по будням',
   },
 
   {
@@ -192,7 +193,7 @@ export const SIMPLE_TEST: {
       each: RruleEach.Year,
     },
     result: 'RRULE:FREQ=YEARLY',
-    formatted: 'Каждый год',
+    formatted: 'Ежегодно',
   },
   {
     data: {
@@ -201,6 +202,6 @@ export const SIMPLE_TEST: {
       day: 15,
     },
     result: 'RRULE:FREQ=YEARLY;BYMONTH=5',
-    formatted: 'Каждый год, май',
+    formatted: 'Ежегодно, май',
   },
 ];

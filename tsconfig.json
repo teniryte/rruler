@@ -5,10 +5,12 @@
     "rootDir": "./src",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "module": "CommonJS",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "resolveJsonModule": true,
+    "outDir": "dist",
     "lib": ["ES6", "DOM"],
 
     "emitDecoratorMetadata": true,

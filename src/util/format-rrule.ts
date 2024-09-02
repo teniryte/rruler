@@ -35,7 +35,16 @@ const MONTH_TITLES = [
 
 export const formatRrule = (
   rrule: RruleGenerateInterface | RruleInterface | string,
-  isShort = false
+  {
+    isShort,
+    addDot,
+  }: {
+    addDot: boolean;
+    isShort: boolean;
+  } = {
+    addDot: false,
+    isShort: false,
+  }
 ) => {
   if (!rrule) return null;
   if (typeof rrule === 'string') {
@@ -44,24 +53,31 @@ export const formatRrule = (
     rrule = createRrule(rrule as RruleGenerateInterface);
   }
   rrule = rrule as RruleInterface;
+  const time = formatRruleTime(rrule.byHour, rrule.byMinute);
+  let text;
+  let weekdays = (
+    rrule.byDay
+      ? (!rrule.byDay.find((day) => day.index) ? ' по ' : ', ') +
+        formatRruleWeekdays(rrule.byDay, addDot)
+      : ''
+  ).trim();
+  const week = formatWeeks(rrule.byWeekNo);
   if (rrule.frequency === RruleFrequencyEnum.Dayly) {
-    let label =
-      !rrule.interval || rrule.interval === 1
-        ? 'Каждый день'
-        : `Каждые ${rrule.interval} ${plural(rrule.interval, [
-            'день',
-            'дня',
-            'дней',
-          ])}`;
-    if (rrule.byDay) {
-      label = 'По ' + formatRruleWeekdays(rrule.byDay);
+    text = 'Ежедневно';
+    if (rrule.interval && rrule.interval > 1) {
+      text = `Каждые ${rrule.interval} ${plural(rrule.interval, [
+        'день',
+        'дня',
+        'дней',
+      ])}`;
     }
-    const time = formatRruleTime(rrule.byHour, rrule.byMinute);
-    return `${label}${time ? ` в ${time}` : ''}`;
+    if (rrule.byDay) {
+      text = `${weekdays[0].toUpperCase()}${weekdays.slice(1)}`;
+    }
   }
   if (rrule.frequency === RruleFrequencyEnum.Monthly) {
-    let label = 'Каждый месяц';
-    if (rrule.interval) {
+    let label = 'Ежемесячно';
+    if (rrule.interval && rrule.interval > 1) {
       label = `Каждые ${rrule.interval} ${plural(rrule.interval, [
         'месяц',
         'месяца',
@@ -69,39 +85,70 @@ export const formatRrule = (
       ])}`;
     }
     if (rrule.byDay) {
-      const days = formatRruleWeekdays(rrule.byDay);
-      return `${label}${
-        rrule.byDay.length === 1 && !rrule.byDay[0].index ? ' по ' : ', '
-      }${days}`;
-    }
-    if (rrule.byMonthDay) {
+      text = `${label}${week ? ` (${week})` : ''}${
+        weekdays && ', '
+      }${weekdays}`;
+    } else if (rrule.byMonthDay) {
       const days = formatRruleMonthDays(rrule.byMonthDay);
-      return `${label}, ${days}`;
+      text = `${label}, ${days} числа`;
+    } else {
+      text = label;
     }
-    return label;
   }
   if (rrule.frequency === RruleFrequencyEnum.Weekly) {
-    let label = 'Каждую неделю';
-    if (rrule.byDay) {
-      return `${label} по ${formatRruleWeekdays(rrule.byDay)}`;
+    let label = 'Еженедельно';
+    if (rrule.interval && rrule.interval > 1) {
+      label = `Каждые ${rrule.interval} ${plural(rrule.interval, [
+        'неделя',
+        'недели',
+        'недель',
+      ])}`;
     }
-    return label;
+    if (rrule.byDay) {
+      text = `${label}${weekdays && ' '}${weekdays}`;
+    } else {
+      text = label;
+    }
   }
   if (rrule.frequency === RruleFrequencyEnum.Yearly) {
-    let label = 'Каждый год';
+    let label = 'Ежегодно';
+    if (rrule.interval && rrule.interval > 1) {
+      label = `Каждые ${rrule.interval} ${plural(rrule.interval, [
+        'год',
+        'года',
+        'лет',
+      ])}`;
+    }
     let month = rrule.byMonth
       ? `, ${formatRruleMonths(rrule.byMonth, isShort)}`
       : '';
-    let weekdays = rrule.byDay
-      ? `${
-          rrule.byDay.length === 1 && !rrule.byDay[0].index ? ' по ' : ', '
-        }${formatRruleWeekdays(rrule.byDay)}`
-      : '';
     let day = rrule.byMonthDay
-      ? `, ${formatRruleMonthDays(rrule.byMonthDay)}`
+      ? `, ${formatRruleMonthDays(rrule.byMonthDay)} числа`
       : '';
-    return `${label}${month}${weekdays}${day}`;
+    text = `${label}${month}${weekdays && ', '}${weekdays}${day}`;
   }
+  return `${text}${time ? ` в ${time}` : ''}`
+    .replace(/\s+/g, ' ')
+    .replace(/\s,/g, ',')
+    .replace(/,,/g, ',');
+};
+
+export const formatWeeks = (weeks: RruleInterface['byWeekNo']) => {
+  if (!weeks || !weeks.length) return '';
+  return rruleJoinItems(
+    weeks.map((week) => {
+      if (week === 1) {
+        return 'первая неделя';
+      }
+      if (week === -1) {
+        return 'последняя неделя';
+      }
+      if (week === -1) {
+        return 'предпоследняя неделя';
+      }
+      return `${week} неделя`;
+    })
+  );
 };
 
 export const formatRruleMonths = (
@@ -109,9 +156,11 @@ export const formatRruleMonths = (
   isShort = false
 ): string => {
   if (!months || !months.length) return '';
-  return months
-    .map((month) => formatRruleMonth(month, isShort))
-    .join(months.length === 2 ? ' и ' : ', ');
+  return rruleJoinItems(
+    months
+      .sort((a, b) => a - b)
+      .map((month) => formatRruleMonth(month, isShort))
+  );
 };
 
 export const formatRruleMonth = (month: number, isShort = false): string => {
@@ -122,18 +171,23 @@ export const formatRruleMonth = (month: number, isShort = false): string => {
 
 export const formatRruleMonthDays = (days: number[]): string => {
   if (!days || !days.length) return '';
+  days = days.sort();
   if (days.length === 1) {
-    return `${days[0]} числа`;
+    return `${days[0]}`;
   }
   if (days.length === 2) {
-    return days.join(' и ') + ' числа';
+    return rruleJoinItems(days);
   }
   return days.join(', ');
 };
 
-export const formatRruleWeekday = (weekday: RruleWeekdayInterface): string => {
+export const formatRruleWeekday = (
+  weekday: RruleWeekdayInterface,
+  addDot = false
+): string => {
   if (!weekday) return '';
-  const title = WEEKDAY_TITLES[weekday.name].toLowerCase() + '.';
+  const title =
+    WEEKDAY_TITLES[weekday.name].toLowerCase() + (addDot ? '.' : '');
   let index: number | string = weekday.index;
   if (index === -1) {
     index = 'посл.';
@@ -144,27 +198,72 @@ export const formatRruleWeekday = (weekday: RruleWeekdayInterface): string => {
   return `${index} ${title}`;
 };
 
+function allElementsSame<T>(arr: T[]) {
+  return new Set(arr).size === 1;
+}
+
+const sortWeekdays = (weekdays: RruleWeekdayInterface[]) => {
+  const keys = Object.keys(WEEKDAY_TITLES);
+  return weekdays.sort((a, b) => keys.indexOf(a.name) - keys.indexOf(b.name));
+};
+
 export const formatRruleWeekdays = (
-  weekdays: RruleWeekdayInterface[]
+  weekdays: RruleWeekdayInterface[],
+  addDot = false
 ): string => {
   if (!weekdays || !weekdays.length) return '';
-  return weekdays
-    .map(formatRruleWeekday)
-    .join(weekdays.length === 2 ? ' и ' : ', ');
+  weekdays = sortWeekdays(weekdays);
+  if (
+    weekdays.length === 5 &&
+    weekdays.map((day) => day.name).join('-') === 'MO-TU-WE-TH-FR'
+  ) {
+    return 'будням';
+  }
+  if (
+    weekdays.length === 2 &&
+    weekdays.map((day) => day.name).join('-') === 'SA-SU'
+  ) {
+    return 'выходным';
+  }
+  if (allElementsSame(weekdays.map((day) => day.name))) {
+    const title = formatRruleWeekday(weekdays[0], addDot).split(' ').pop();
+    const indices = weekdays
+      .map((day) => {
+        const t = formatRruleWeekday(day, addDot).split(' ');
+        t.pop();
+        return t[0];
+      })
+      .filter((val) => !!val);
+    return `${rruleJoinItems(indices)} ${title}`;
+  }
+  return rruleJoinItems(weekdays.map((val) => formatRruleWeekday(val, addDot)));
 };
 
 export const formatRruleTime = (
-  hours: number[],
-  minutes?: number[]
+  hours: (number | null)[],
+  minutes?: (number | null)[]
 ): string => {
   if (!hours) return '';
   minutes = minutes || [];
-  return hours
-    .map(
+  const result = rruleJoinItems(
+    hours.map(
       (hour, i) =>
         `${hour}`.padStart(2, '0') + ':' + `${minutes[i] || 0}`.padStart(2, '0')
     )
-    .join(', ');
+  );
+  return result;
+};
+
+export const rruleJoinItems = (vals: any[]): string => {
+  if (!vals || vals.length === 0) return '';
+  let result = '';
+  vals.forEach((val, i) => {
+    result +=
+      i === vals.length - 1
+        ? val
+        : `${val}${i === vals.length - 2 ? ' и ' : ', '}`;
+  });
+  return result;
 };
 
 /*
