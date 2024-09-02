@@ -1,7 +1,9 @@
 import { RruleFrequencyEnum } from '../types/frequency.enum';
+import { RruleGenerateInterface } from '../types/generate.interface';
 import { RruleInterface } from '../types/rrule.interface';
 import { RruleWeekdayEnum } from '../types/weekday.enum';
 import { RruleWeekdayInterface } from '../types/weekday.interface';
+import { createRrule } from './create-rrule';
 import { parseRrule } from './parse-rrule';
 import { plural } from './plural';
 
@@ -32,13 +34,16 @@ const MONTH_TITLES = [
 ];
 
 export const formatRrule = (
-  rrule: RruleInterface | string,
+  rrule: RruleGenerateInterface | RruleInterface | string,
   isShort = false
 ) => {
   if (!rrule) return null;
   if (typeof rrule === 'string') {
     rrule = parseRrule(rrule);
+  } else if (Object.keys(rrule).includes('each')) {
+    rrule = createRrule(rrule as RruleGenerateInterface);
   }
+  rrule = rrule as RruleInterface;
   if (rrule.frequency === RruleFrequencyEnum.Dayly) {
     let label =
       !rrule.interval || rrule.interval === 1
