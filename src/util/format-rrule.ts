@@ -2,6 +2,7 @@ import { RruleFrequencyEnum } from '../types/frequency.enum';
 import { RruleInterface } from '../types/rrule.interface';
 import { RruleWeekdayEnum } from '../types/weekday.enum';
 import { RruleWeekdayInterface } from '../types/weekday.interface';
+import { parseRrule } from './parse-rrule';
 import { plural } from './plural';
 
 const WEEKDAY_TITLES = {
@@ -30,8 +31,14 @@ const MONTH_TITLES = [
   'Декабрь',
 ];
 
-export const formatRrule = (rrule: RruleInterface, isShort = false) => {
+export const formatRrule = (
+  rrule: RruleInterface | string,
+  isShort = false
+) => {
   if (!rrule) return null;
+  if (typeof rrule === 'string') {
+    rrule = parseRrule(rrule);
+  }
   if (rrule.frequency === RruleFrequencyEnum.Dayly) {
     let label =
       !rrule.interval || rrule.interval === 1
