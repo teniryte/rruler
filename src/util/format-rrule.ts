@@ -33,28 +33,24 @@ const MONTH_TITLES = [
   'Декабрь',
 ];
 
-export const formatRrule = (
-  rrule: RruleGenerateInterface | RruleInterface | string,
-  {
-    isShort,
-    addDot,
-  }: {
-    addDot: boolean;
-    isShort: boolean;
-  } = {
-    addDot: false,
-    isShort: false,
-  }
-) => {
-  if (!rrule) return null;
+const parseRruleIfNeeded = (
+  rrule: RruleGenerateInterface | RruleInterface | string
+): RruleInterface => {
   if (typeof rrule === 'string') {
-    rrule = parseRrule(rrule);
-  } else if (Object.keys(rrule).includes('each')) {
-    rrule = createRrule(rrule as RruleGenerateInterface);
+    return parseRrule(rrule);
   }
-  rrule = rrule as RruleInterface;
-  const time = formatRruleTime(rrule.byHour, rrule.byMinute);
-  let text;
+  if ('each' in rrule) {
+    return createRrule(rrule as RruleGenerateInterface);
+  }
+  return rrule as RruleInterface;
+};
+
+const formatFrequency = (
+  rrule: RruleInterface,
+  isShort: boolean,
+  addDot: boolean
+): string => {
+  let text = '';
   let weekdays = (
     rrule.byDay
       ? (!rrule.byDay.find((day) => day.index) ? ' по ' : ', ') +
@@ -62,72 +58,86 @@ export const formatRrule = (
       : ''
   ).trim();
   const week = formatWeeks(rrule.byWeekNo);
-  if (rrule.frequency === RruleFrequencyEnum.Dayly) {
-    text = 'Ежедневно';
-    if (rrule.interval && rrule.interval > 1) {
-      text = `Каждые ${rrule.interval} ${plural(rrule.interval, [
-        'день',
-        'дня',
-        'дней',
-      ])}`;
-    }
-    if (rrule.byDay) {
-      text = `${weekdays[0].toUpperCase()}${weekdays.slice(1)}`;
-    }
+  let label;
+
+  switch (rrule.frequency) {
+    case RruleFrequencyEnum.Dayly:
+      text =
+        rrule.interval && rrule.interval > 1
+          ? `Каждые ${rrule.interval} ${plural(rrule.interval, [
+              'день',
+              'дня',
+              'дней',
+            ])}`
+          : 'Ежедневно';
+      if (rrule.byDay) {
+        text = `${weekdays[0].toUpperCase()}${weekdays.slice(1)}`;
+      }
+      break;
+    case RruleFrequencyEnum.Monthly:
+      label =
+        rrule.interval && rrule.interval > 1
+          ? `Каждые ${rrule.interval} ${plural(rrule.interval, [
+              'месяц',
+              'месяца',
+              'месяцев',
+            ])}`
+          : 'Ежемесячно';
+      text = rrule.byDay
+        ? `${label}${week ? ` (${week})` : ''}${weekdays && ', '}${weekdays}`
+        : rrule.byMonthDay
+        ? `${label}, ${formatRruleMonthDays(rrule.byMonthDay)} числа`
+        : label;
+      break;
+    case RruleFrequencyEnum.Weekly:
+      label =
+        rrule.interval && rrule.interval > 1
+          ? `Каждые ${rrule.interval} ${plural(rrule.interval, [
+              'неделя',
+              'недели',
+              'недель',
+            ])}`
+          : 'Еженедельно';
+      text = rrule.byDay ? `${label}${weekdays && ' '}${weekdays}` : label;
+      break;
+    case RruleFrequencyEnum.Yearly:
+      label =
+        rrule.interval && rrule.interval > 1
+          ? `Каждые ${rrule.interval} ${plural(rrule.interval, [
+              'год',
+              'года',
+              'лет',
+            ])}`
+          : 'Ежегодно';
+      const month = rrule.byMonth
+        ? `, ${formatRruleMonths(rrule.byMonth, isShort)}`
+        : '';
+      const day = rrule.byMonthDay
+        ? `, ${formatRruleMonthDays(rrule.byMonthDay)} числа`
+        : '';
+      text = `${label}${month}${weekdays && ', '}${weekdays}${day}`;
+      break;
+    default:
+      text = ''; // Default case if needed
   }
-  if (rrule.frequency === RruleFrequencyEnum.Monthly) {
-    let label = 'Ежемесячно';
-    if (rrule.interval && rrule.interval > 1) {
-      label = `Каждые ${rrule.interval} ${plural(rrule.interval, [
-        'месяц',
-        'месяца',
-        'месяцев',
-      ])}`;
-    }
-    if (rrule.byDay) {
-      text = `${label}${week ? ` (${week})` : ''}${
-        weekdays && ', '
-      }${weekdays}`;
-    } else if (rrule.byMonthDay) {
-      const days = formatRruleMonthDays(rrule.byMonthDay);
-      text = `${label}, ${days} числа`;
-    } else {
-      text = label;
-    }
+
+  return text;
+};
+
+export const formatRrule = (
+  rrule: RruleGenerateInterface | RruleInterface | string,
+  { isShort, addDot }: { addDot: boolean; isShort: boolean } = {
+    addDot: false,
+    isShort: false,
   }
-  if (rrule.frequency === RruleFrequencyEnum.Weekly) {
-    let label = 'Еженедельно';
-    if (rrule.interval && rrule.interval > 1) {
-      label = `Каждые ${rrule.interval} ${plural(rrule.interval, [
-        'неделя',
-        'недели',
-        'недель',
-      ])}`;
-    }
-    if (rrule.byDay) {
-      text = `${label}${weekdays && ' '}${weekdays}`;
-    } else {
-      text = label;
-    }
-  }
-  if (rrule.frequency === RruleFrequencyEnum.Yearly) {
-    let label = 'Ежегодно';
-    if (rrule.interval && rrule.interval > 1) {
-      label = `Каждые ${rrule.interval} ${plural(rrule.interval, [
-        'год',
-        'года',
-        'лет',
-      ])}`;
-    }
-    let month = rrule.byMonth
-      ? `, ${formatRruleMonths(rrule.byMonth, isShort)}`
-      : '';
-    let day = rrule.byMonthDay
-      ? `, ${formatRruleMonthDays(rrule.byMonthDay)} числа`
-      : '';
-    text = `${label}${month}${weekdays && ', '}${weekdays}${day}`;
-  }
-  return `${text}${time ? ` в ${time}` : ''}`
+): string | null => {
+  if (!rrule) return null;
+
+  rrule = parseRruleIfNeeded(rrule);
+  const time = formatRruleTime(rrule.byHour, rrule.byMinute);
+  const frequencyText = formatFrequency(rrule, isShort, addDot);
+
+  return `${frequencyText}${time ? ` в ${time}` : ''}`
     .replace(/\s+/g, ' ')
     .replace(/\s,/g, ',')
     .replace(/,,/g, ',');
