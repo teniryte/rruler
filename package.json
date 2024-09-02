@@ -1,6 +1,6 @@
 {
   "name": "rruler",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Parse & Format rrule in Russian language",
   "main": "dist/index.js",
   "files": [
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "nodemon -e .ts --watch src --watch tests --exec 'jest'",
     "build": "tsc",
-    "dev": "nodemon -e .ts --watch src --exec 'yarn build; node dist/cjs/index.js'",
+    "dev": "nodemon -e .ts --watch src --exec 'yarn build'",
     "clean": "rimraf dist",
     "lint": "eslint 'src/**/*.ts'",
     "prepare": "npm run build"
