@@ -1,6 +1,6 @@
 {
   "name": "rruler",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Parse & Format rrule in Russian language",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -20,13 +20,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/your-repo.git"
+    "url": "git+https://github.com/teniryte/rruler.git"
   },
   "keywords": [
     "typescript",
     "library"
   ],
-  "author": "Your Name",
+  "author": "teniryte",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.12",
