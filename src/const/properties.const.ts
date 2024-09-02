@@ -4,7 +4,6 @@ import { parseWeekday } from '../util/parse-rrule';
 import { RruleInterface } from '../types/rrule.interface';
 import { RruleFrequencyEnum } from '../types/frequency.enum';
 import { RruleWeekdayEnum } from '../types/weekday.enum';
-import { map } from 'lodash';
 
 export const RRULE_PROPERTIES: {
   [K in keyof RruleInterface]: {
@@ -142,7 +141,6 @@ export const RRULE_PROPERTIES: {
   },
 };
 
-export const RRULE_PROPERTY_KEYS = map(
-  RRULE_PROPERTIES,
-  (value, name: keyof RruleInterface) => RRULE_PROPERTIES[name].key
+export const RRULE_PROPERTY_KEYS = Object.keys(RRULE_PROPERTIES).map(
+  (name: keyof RruleInterface) => RRULE_PROPERTIES[name].key
 );

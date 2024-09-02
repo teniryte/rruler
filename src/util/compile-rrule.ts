@@ -1,16 +1,12 @@
-import { map } from 'lodash';
 import { RruleInterface } from '../types/rrule.interface';
 import { RRULE_PROPERTIES } from '../const/properties.const';
 
 export const compileRrule = (rrule: RruleInterface) => {
   return (
     'RRULE:' +
-    map(
-      rrule,
-      (
-        value: RruleInterface[keyof RruleInterface],
-        name: keyof RruleInterface
-      ) => {
+    Object.keys(rrule)
+      .map((name: keyof RruleInterface) => {
+        const value: RruleInterface[keyof RruleInterface] = rrule[name];
         try {
           if (!value) return null;
           const prop = RRULE_PROPERTIES[name];
@@ -19,8 +15,7 @@ export const compileRrule = (rrule: RruleInterface) => {
         } catch (err) {
           return null;
         }
-      }
-    )
+      })
       .filter((prop) => prop)
       .join(';')
   );
