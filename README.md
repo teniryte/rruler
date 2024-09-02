@@ -4,20 +4,26 @@ TypeScript library for simple creating, parsing and formatting event RRULE strin
 
 ## Examples
 
+### Generating RRULE string
+
 ```ts
 import { generateRrule } from 'rruler';
+import {
+  RruleEach,
+  RruleWeekday,
+} from 'rruler/dist/esm/types/generate.interface';
 
-let rruleString = generateRrule({
-  start: moment(),
-  each: 'day',
+const rruleString = generateRrule({
+  each: 'day' as RruleEach,
+  hours: [9, 18],
+  weekdays: ['mo', 'tu', 'we', 'th', 'fr'] as RruleWeekday[],
 });
 
-rruleString = generateRrule({
-  start: moment(),
-  end: moment('15.04.2026', 'DD.MM.YYYY'),
-  each: 'year',
-});
+// RRULE:FREQ=DAYLY;BYHOUR=9,18;BYDAY=MO,TU,WE,TH,FR
+console.log(rruleString);
 ```
+
+### Parsing RRULE
 
 ```ts
 import { parseRrule } from 'rruler';
@@ -25,10 +31,12 @@ import { parseRrule } from 'rruler';
 const rruleObject = parseRrule(rruleString);
 ```
 
+### Formatting RRULE
+
 ```ts
 import { formatRrule } from 'rruler';
 
-const rruleLabel = formatRrule(rruleObject || rruleString, 'ru');
+const rruleLabel = formatRrule(rruleObject || rruleString);
 ```
 
 ```ts

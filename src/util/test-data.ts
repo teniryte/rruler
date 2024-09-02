@@ -18,7 +18,7 @@ export const SIMPLE_TEST: {
       hours: [9, 18],
       weekdays: ['mo', 'tu', 'we', 'th', 'fr'] as any,
     },
-    result: 'RRULE:FREQ=DAYLY;BYHOUR=9,18;BYDAY=MO,TU,WE,TH,FR',
+    result: 'RRULE:FREQ=DAILY;BYHOUR=9,18;BYDAY=MO,TU,WE,TH,FR',
     formatted: 'По пн., вт., ср., чт., пт. в 09:00, 18:00',
   },
   {
@@ -26,7 +26,7 @@ export const SIMPLE_TEST: {
       each: RruleEach.Day,
       interval: 1,
     },
-    result: 'RRULE:FREQ=DAYLY;INTERVAL=1',
+    result: 'RRULE:FREQ=DAILY;INTERVAL=1',
     formatted: 'Каждый день',
   },
   {
@@ -34,7 +34,7 @@ export const SIMPLE_TEST: {
       each: RruleEach.Day,
       start: DATE,
     },
-    result: 'RRULE:FREQ=DAYLY;BYHOUR=2;BYMINUTE=53',
+    result: 'RRULE:FREQ=DAILY;BYHOUR=2;BYMINUTE=53',
     formatted: 'Каждый день в 02:53',
   },
   {
@@ -43,7 +43,7 @@ export const SIMPLE_TEST: {
       hour: 12,
       minute: 30,
     },
-    result: 'RRULE:FREQ=DAYLY;BYHOUR=12;BYMINUTE=30',
+    result: 'RRULE:FREQ=DAILY;BYHOUR=12;BYMINUTE=30',
     formatted: 'Каждый день в 12:30',
   },
   {

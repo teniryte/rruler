@@ -1,5 +1,5 @@
 export enum RruleFrequencyEnum {
-  Dayly = 'DAYLY',
+  Dayly = 'DAILY',
   Weekly = 'WEEKLY',
   Monthly = 'MONTHLY',
   Yearly = 'YEARLY',
