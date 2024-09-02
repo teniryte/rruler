@@ -1,6 +1,6 @@
 {
   "name": "rruler",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Parse & Format rrule in Russian language",
   "main": "dist/index.js",
   "files": [
