@@ -1,10 +1,11 @@
 {
   "name": "rruler",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "description": "Parse & Format rrule in Russian language",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "test": "nodemon -e .ts --watch src --watch tests --exec 'jest'",
